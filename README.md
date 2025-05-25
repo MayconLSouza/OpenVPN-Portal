@@ -33,7 +33,7 @@ Traditional VPNs often share a single certificate across all employees, creating
 
 ## Quick Start
 ### Prerequisites
-- Debian/Ubuntu server with:
+- Debian server with:
   - OpenVPN (`sudo apt install openvpn`)
   - EasyRSA (`sudo apt install easy-rsa`)
   - Python 3.7+ (`sudo apt install python3`)
