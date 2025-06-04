@@ -1,4 +1,4 @@
-package enums;
+package com.painelvpn.enums;
 
 public enum Enum_StatusFuncionario {
 	ATIVO(1),

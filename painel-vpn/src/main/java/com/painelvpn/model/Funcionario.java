@@ -1,6 +1,8 @@
-package model.entities;
+package com.painelvpn.model;
 
 import java.util.List;
+
+import com.painelvpn.enums.Enum_StatusFuncionario;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,8 +15,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-
-import enums.Enum_StatusFuncionario;
 
 @Entity
 @Table(name = "funcionarios")
