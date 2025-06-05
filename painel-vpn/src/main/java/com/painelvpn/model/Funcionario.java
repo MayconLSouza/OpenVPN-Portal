@@ -1,9 +1,11 @@
 package com.painelvpn.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.painelvpn.enums.Enum_StatusFuncionario;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -51,8 +53,8 @@ public class Funcionario {
 	@Column(nullable = false)
 	private Enum_StatusFuncionario status;
 	
-	@OneToMany(mappedBy = "funcionario")
-	private List<Certificado> certificados;
+	@OneToMany(mappedBy = "funcionario", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Certificado> certificados = new ArrayList<>();
 	
 	public Funcionario() {
 		this.tentativasLogin = 0;
@@ -144,5 +146,15 @@ public class Funcionario {
 	public void resetarTentativasLogin() {
 		this.tentativasLogin = 0;
 	}
-	
+
+	// Métodos helper para gerenciar a relação bidirecional
+	public void adicionarCertificado(Certificado certificado) {
+		certificados.add(certificado);
+		certificado.setFuncionario(this);
+	}
+
+	public void removerCertificado(Certificado certificado) {
+		certificados.remove(certificado);
+		certificado.setFuncionario(null);
+	}
 }
