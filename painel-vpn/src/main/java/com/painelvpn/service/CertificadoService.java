@@ -4,7 +4,9 @@ import java.util.List;
 
 import com.painelvpn.model.Certificado;
 import com.painelvpn.repository.ICertificadoRepository;
+import org.springframework.stereotype.Service;
 
+@Service
 public class CertificadoService {
 
     private final ICertificadoRepository certificadoRepository;
