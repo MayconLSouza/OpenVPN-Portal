@@ -1,0 +1,145 @@
+{
+    "info": {
+        "name": "VPN Panel API",
+        "description": "Coleção de endpoints para o Painel VPN",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Autenticação",
+            "item": [
+                {
+                    "name": "Login",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"usuario\": \"root\",\n    \"senha\": \"admin123\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/auth/login",
+                            "protocol": "http",
+                            "host": ["localhost"],
+                            "port": "8080",
+                            "path": ["api", "auth", "login"]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Funcionários",
+            "item": [
+                {
+                    "name": "Criar Funcionário",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nome\": \"Novo Funcionário\",\n    \"email\": \"funcionario@empresa.com\",\n    \"usuario\": \"novo.funcionario\",\n    \"senha\": \"senha123\"\n}"
+                        },
+                        "url": {
+                            "raw": "http://localhost:8080/api/funcionarios",
+                            "protocol": "http",
+                            "host": ["localhost"],
+                            "port": "8080",
+                            "path": ["api", "funcionarios"]
+                        }
+                    }
+                },
+                {
+                    "name": "Eleger Administrador",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "http://localhost:8080/api/funcionarios/{{id}}/eleger-admin",
+                            "protocol": "http",
+                            "host": ["localhost"],
+                            "port": "8080",
+                            "path": ["api", "funcionarios", "{{id}}", "eleger-admin"]
+                        }
+                    }
+                },
+                {
+                    "name": "Revogar Administrador",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "http://localhost:8080/api/funcionarios/{{id}}/revogar-admin",
+                            "protocol": "http",
+                            "host": ["localhost"],
+                            "port": "8080",
+                            "path": ["api", "funcionarios", "{{id}}", "revogar-admin"]
+                        }
+                    }
+                },
+                {
+                    "name": "Revogar Acesso",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "http://localhost:8080/api/funcionarios/{{id}}/revogar-acesso",
+                            "protocol": "http",
+                            "host": ["localhost"],
+                            "port": "8080",
+                            "path": ["api", "funcionarios", "{{id}}", "revogar-acesso"]
+                        }
+                    }
+                },
+                {
+                    "name": "Remover Funcionário",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "http://localhost:8080/api/funcionarios/{{id}}",
+                            "protocol": "http",
+                            "host": ["localhost"],
+                            "port": "8080",
+                            "path": ["api", "funcionarios", "{{id}}"]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+} 
