@@ -6,6 +6,8 @@ import java.util.UUID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Future;
@@ -33,16 +35,21 @@ public class Certificado {
     @Column(name = "caminho_linux")
     private String caminhoLinux;
 
+    @ManyToOne
+    @JoinColumn(name = "id_funcionario", nullable = false)
+    private Funcionario funcionario;
+
     // Construtor vazio
     public Certificado() {
         super();
     }
 
     // Construtor com parâmetros
-    public Certificado(LocalDate dataCriacao, LocalDate dataValidade, String caminhoLinux) {
+    public Certificado(LocalDate dataCriacao, LocalDate dataValidade, String caminhoLinux, Funcionario funcionario) {
         this.dataCriacao = dataCriacao;
         this.dataValidade = dataValidade;
         this.caminhoLinux = caminhoLinux;
+        this.funcionario = funcionario;
     }
 
     @PrePersist
@@ -81,12 +88,20 @@ public class Certificado {
         this.dataValidade = dataValidade;
     }
 
-    public String getcaminhoLinux() {
+    public String getCaminhoLinux() {
         return caminhoLinux;
     }
 
-    public void setcaminhoLinux(String caminhoLinux) {
+    public void setCaminhoLinux(String caminhoLinux) {
         this.caminhoLinux = caminhoLinux;
+    }
+
+    public Funcionario getFuncionario() {
+        return funcionario;
+    }
+
+    public void setFuncionario(Funcionario funcionario) {
+        this.funcionario = funcionario;
     }
 
     // ToString
@@ -97,6 +112,7 @@ public class Certificado {
                 ", dataCriacao=" + dataCriacao +
                 ", dataValidade=" + dataValidade +
                 ", caminhoLinux='" + caminhoLinux + '\'' +
+                ", funcionario=" + funcionario +
                 '}';
     }
 }
