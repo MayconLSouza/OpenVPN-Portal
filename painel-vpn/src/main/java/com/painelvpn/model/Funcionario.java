@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.painelvpn.enums.Enum_StatusFuncionario;
+import com.painelvpn.validation.SenhaForte;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -17,6 +18,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "funcionarios")
@@ -36,10 +38,12 @@ public class Funcionario {
 	private String email;
 
 	@NotBlank(message = "O usuário é obrigatório")
+	@Size(min = 3, max = 30, message = "O usuário deve ter entre 3 e 30 caracteres")
 	@Column(unique = true, nullable = false)
 	private String usuario;
 	
 	@NotBlank(message = "A senha é obrigatória")
+	@SenhaForte
 	@Column(nullable = false)
 	private String senha;
 	
@@ -138,8 +142,8 @@ public class Funcionario {
 	// Métodos de negócio
 	public void incrementarTentativasLogin() {
 		this.tentativasLogin++;
-		if (this.tentativasLogin >= 3) {
-			this.status = Enum_StatusFuncionario.BLOQUEADO;
+		if (this.tentativasLogin >= 10) {
+			setStatus(Enum_StatusFuncionario.BLOQUEADO);
 		}
 	}
 

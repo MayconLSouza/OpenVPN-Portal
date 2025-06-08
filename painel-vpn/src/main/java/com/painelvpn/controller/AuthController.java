@@ -54,23 +54,27 @@ public class AuthController {
                     request.getSenha()
                 )
             );
-            
+
+            // Se chegou aqui, a autenticação foi bem-sucedida
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             String token = jwtService.generateToken(userDetails);
             
-            logger.info("Login bem-sucedido para usuário: {}", request.getUsuario());
+            // Registra o login bem-sucedido
+            authService.handleSuccessfulLogin(request.getUsuario());
+
             return ResponseEntity.ok(new LoginResponse(token));
-            
+
         } catch (BadCredentialsException e) {
-            logger.error("Falha no login para usuário: {}. Erro: {}", request.getUsuario(), e.getMessage());
+            // Registra a tentativa falha de login
+            authService.handleFailedLogin(request.getUsuario());
             return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body(new ErrorResponse("Credenciais inválidas. Verifique seu usuário e senha."));
-        } catch (Exception e) {
-            logger.error("Erro inesperado no login para usuário: {}. Erro: {}", request.getUsuario(), e.getMessage());
+                .body(new ErrorResponse("Usuário ou senha estão incorretos"));
+        } catch (AuthenticationException e) {
+            // Captura outras exceções de autenticação (como usuário bloqueado ou revogado)
             return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse("Erro interno do servidor ao processar o login."));
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(new ErrorResponse(e.getMessage()));
         }
     }
 
