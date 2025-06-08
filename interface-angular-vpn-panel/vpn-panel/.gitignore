@@ -1,0 +1,59 @@
+# Dependências
+/node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Angular
+/dist
+/.angular
+/.angular/cache
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
+
+# IDEs e editores
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos de ambiente
+/src/environments/*.ts
+!/src/environments/environment.ts
+
+# Arquivos de compilação
+*.js.map
+*.js
+!karma.conf.js
+!protractor.conf.js
+
+# e2e
+/e2e/*.js
+/e2e/*.map
+
+# Arquivos temporários
+*.log
+*.tmp
+*.tmp.*
+*~
+
+# Arquivos de configuração local
+.env
+.env.local
+.env.*.local 
