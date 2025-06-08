@@ -16,14 +16,14 @@ import { map } from 'rxjs/operators';
         <span matListItemTitle>Certificados</span>
       </a>
 
+      <a mat-list-item routerLink="/funcionarios" routerLinkActive="active">
+        <mat-icon matListItemIcon>people</mat-icon>
+        <span matListItemTitle>Funcionários</span>
+      </a>
+
       <ng-container *ngIf="isAdmin$ | async">
         <mat-divider></mat-divider>
         
-        <a mat-list-item routerLink="/funcionarios" routerLinkActive="active">
-          <mat-icon matListItemIcon>people</mat-icon>
-          <span matListItemTitle>Funcionários</span>
-        </a>
-
         <a mat-list-item routerLink="/auditoria" routerLinkActive="active">
           <mat-icon matListItemIcon>history</mat-icon>
           <span matListItemTitle>Log de Auditoria</span>

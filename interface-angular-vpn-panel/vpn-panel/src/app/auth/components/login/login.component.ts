@@ -26,15 +26,24 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Senha</mat-label>
-              <input matInput type="password" formControlName="senha" required>
+              <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="senha" required>
+              <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
+                <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+              </button>
               <mat-error *ngIf="loginForm.get('senha')?.hasError('required')">
                 Senha é obrigatória
               </mat-error>
             </mat-form-field>
+
+            <div class="forgot-password">
+              <a mat-button color="primary" (click)="onForgotPassword()">
+                Esqueceu senha?
+              </a>
+            </div>
           </mat-card-content>
 
           <mat-card-actions align="end">
-            <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid || loading">
+            <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid || loading" (click)="onSubmit()">
               <mat-icon *ngIf="!loading">login</mat-icon>
               <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
               Login
@@ -64,6 +73,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
       margin-bottom: 16px;
     }
 
+    .forgot-password {
+      text-align: right;
+      margin-top: -8px;
+      margin-bottom: 16px;
+    }
+
     mat-card-actions {
       padding: 16px;
     }
@@ -82,6 +97,7 @@ export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   loading = false;
   returnUrl: string;
+  hidePassword = true;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -105,7 +121,7 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.loginForm.invalid) {
+    if (this.loginForm.invalid || this.loading) {
       return;
     }
 
@@ -125,5 +141,9 @@ export class LoginComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  onForgotPassword(): void {
+    this.router.navigate(['/request-password-reset']);
   }
 } 
