@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.painelvpn.model.Funcionario;
+import com.painelvpn.dto.LoginRequest;
 import com.painelvpn.service.AuthService;
 import com.painelvpn.service.JwtService;
 
@@ -84,35 +84,6 @@ public class AuthController {
         String encoded = passwordEncoder.encode(password);
         logger.info("Senha criptografada gerada");
         return ResponseEntity.ok(encoded);
-    }
-}
-
-class LoginRequest {
-    private String usuario;
-    private String senha;
-
-    public LoginRequest() {
-    }
-
-    public LoginRequest(String usuario, String senha) {
-        this.usuario = usuario;
-        this.senha = senha;
-    }
-
-    public String getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
-    }
-
-    public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
     }
 }
 
