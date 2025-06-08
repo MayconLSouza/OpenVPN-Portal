@@ -3,6 +3,7 @@ package com.painelvpn.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -70,8 +71,13 @@ public class AuthController {
             return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(new ErrorResponse("Usuário ou senha estão incorretos"));
+        } catch (DisabledException e) {
+            // Usuário bloqueado ou revogado
+            return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(new ErrorResponse(e.getMessage()));
         } catch (AuthenticationException e) {
-            // Captura outras exceções de autenticação (como usuário bloqueado ou revogado)
+            // Captura outras exceções de autenticação
             return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(new ErrorResponse(e.getMessage()));

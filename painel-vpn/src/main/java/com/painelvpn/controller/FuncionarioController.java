@@ -49,4 +49,10 @@ public class FuncionarioController {
         funcionarioService.remover(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}/reativar-acesso")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Funcionario> reativarAcessoFuncionario(@PathVariable String id) {
+        return ResponseEntity.ok(funcionarioService.reativarAcessoFuncionario(id));
+    }
 } 

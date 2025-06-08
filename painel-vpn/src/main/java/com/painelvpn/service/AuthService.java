@@ -1,6 +1,7 @@
 package com.painelvpn.service;
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -45,7 +46,7 @@ public class AuthService implements UserDetailsService {
 
         if (funcionario.getStatus() != Enum_StatusFuncionario.ATIVO) {
             logger.error("Usuário bloqueado ou revogado - Username: {}, Status: {}", username, funcionario.getStatus());
-            throw new UsernameNotFoundException("Entre em contato com o administrador da rede");
+            throw new DisabledException("Entre em contato com o administrador da rede");
         }
 
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
@@ -62,6 +63,10 @@ public class AuthService implements UserDetailsService {
         logger.debug("Registrando falha de login para usuário: {}", username);
         funcionarioRepository.findByUsuario(username).ifPresent(funcionario -> {
             funcionario.incrementarTentativasLogin();
+            if (funcionario.getTentativasLogin() >= 10) {
+                funcionario.setStatus(Enum_StatusFuncionario.BLOQUEADO);
+                logger.warn("Usuário {} bloqueado após {} tentativas de login", username, funcionario.getTentativasLogin());
+            }
             funcionarioRepository.save(funcionario);
             logger.debug("Tentativas de login atualizadas para {}: {}", username, funcionario.getTentativasLogin());
         });
