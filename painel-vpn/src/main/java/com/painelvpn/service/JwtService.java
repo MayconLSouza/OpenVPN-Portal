@@ -32,6 +32,10 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
+    public String extractFuncionarioId(String token) {
+        return extractClaim(token, claims -> claims.get("funcionarioId", String.class));
+    }
+
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
@@ -53,9 +57,10 @@ public class JwtService {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(UserDetails userDetails, String funcionarioId) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", userDetails.getAuthorities());
+        claims.put("funcionarioId", funcionarioId);
         return createToken(claims, userDetails.getUsername());
     }
 

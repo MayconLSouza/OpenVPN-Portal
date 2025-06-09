@@ -1,0 +1,145 @@
+{
+    "info": {
+        "name": "Certificados VPN API",
+        "description": "Coleção de endpoints para gerenciar certificados VPN",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Criar Certificado",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/api/certificados",
+                    "host": ["{{base_url}}"],
+                    "path": ["api", "certificados"]
+                }
+            }
+        },
+        {
+            "name": "Listar Certificados do Funcionário",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/api/certificados",
+                    "host": ["{{base_url}}"],
+                    "path": ["api", "certificados"]
+                }
+            }
+        },
+        {
+            "name": "Filtrar por Identificador",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/api/certificados?identificador=ABC123",
+                    "host": ["{{base_url}}"],
+                    "path": ["api", "certificados"],
+                    "query": [
+                        {
+                            "key": "identificador",
+                            "value": "ABC123"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Filtrar por Período",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/api/certificados?dataInicio=2024-03-20&dataFim=2024-03-21",
+                    "host": ["{{base_url}}"],
+                    "path": ["api", "certificados"],
+                    "query": [
+                        {
+                            "key": "dataInicio",
+                            "value": "2024-03-20"
+                        },
+                        {
+                            "key": "dataFim",
+                            "value": "2024-03-21"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Download Certificado",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/api/certificados/ABC123/download",
+                    "host": ["{{base_url}}"],
+                    "path": ["api", "certificados", "ABC123", "download"]
+                }
+            }
+        },
+        {
+            "name": "Deletar Certificado",
+            "request": {
+                "method": "DELETE",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{jwt_token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{base_url}}/api/certificados/ABC123",
+                    "host": ["{{base_url}}"],
+                    "path": ["api", "certificados", "ABC123"]
+                }
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8080",
+            "type": "string"
+        },
+        {
+            "key": "jwt_token",
+            "value": "seu_token_jwt_aqui",
+            "type": "string"
+        }
+    ]
+} 
