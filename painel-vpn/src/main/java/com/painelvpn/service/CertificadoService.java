@@ -1,15 +1,19 @@
 package com.painelvpn.service;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +25,7 @@ import com.painelvpn.repository.ICertificadoRepository;
 @Service
 public class CertificadoService {
 
+    private static final Logger logger = LoggerFactory.getLogger(CertificadoService.class);
     private final ICertificadoRepository certificadoRepository;
     private final String pythonScriptPath;
     private final String certificadosPath;
@@ -33,25 +38,61 @@ public class CertificadoService {
         this.certificadoRepository = certificadoRepository;
         this.pythonScriptPath = pythonScriptPath;
         this.certificadosPath = certificadosPath;
+        
+        logger.info("CertificadoService inicializado com:");
+        logger.info("Python Script Path: {}", pythonScriptPath);
+        logger.info("Certificados Path: {}", certificadosPath);
     }
 
     @Transactional
     public Certificado criarCertificado(Funcionario funcionario) throws IOException {
         String id = gerarIdentificadorUnico();
+        logger.info("Gerando certificado com ID: {}", id);
+        
+        // Verifica se o script existe
+        File scriptFile = new File(pythonScriptPath);
+        if (!scriptFile.exists()) {
+            logger.error("Script Python não encontrado em: {}", pythonScriptPath);
+            throw new RuntimeException("Script Python não encontrado");
+        }
         
         // Executa o script Python para gerar os arquivos
-        ProcessBuilder processBuilder = new ProcessBuilder("python", pythonScriptPath, id);
+        ProcessBuilder processBuilder = new ProcessBuilder("python3", pythonScriptPath, id);
         processBuilder.redirectErrorStream(true);
+        
+        logger.info("Executando comando: python3 {} {}", pythonScriptPath, id);
+        
         Process process = processBuilder.start();
+        
+        // Captura a saída do processo
+        StringBuilder output = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append("\n");
+            }
+        }
         
         try {
             int exitCode = process.waitFor();
+            logger.info("Script Python finalizado com código: {}", exitCode);
+            logger.info("Saída do script:\n{}", output.toString());
+            
             if (exitCode != 0) {
-                throw new RuntimeException("Erro ao gerar arquivos VPN");
+                logger.error("Erro ao gerar arquivos VPN. Código de saída: {}", exitCode);
+                throw new RuntimeException("Erro ao gerar arquivos VPN: " + output.toString());
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            logger.error("Processo interrompido ao gerar arquivos VPN", e);
             throw new RuntimeException("Processo interrompido ao gerar arquivos VPN", e);
+        }
+
+        // Verifica se o arquivo ZIP foi gerado
+        File zipFile = new File(certificadosPath + "/" + id + ".zip");
+        if (!zipFile.exists()) {
+            logger.error("Arquivo ZIP não foi gerado em: {}", zipFile.getAbsolutePath());
+            throw new RuntimeException("Arquivo ZIP não foi gerado");
         }
 
         // Cria o certificado no banco de dados
@@ -62,6 +103,7 @@ public class CertificadoService {
         certificado.setCaminhoLinux(certificadosPath + "/" + id + ".zip");
         certificado.setFuncionario(funcionario);
 
+        logger.info("Salvando certificado no banco de dados: {}", certificado);
         return certificadoRepository.save(certificado);
     }
 
