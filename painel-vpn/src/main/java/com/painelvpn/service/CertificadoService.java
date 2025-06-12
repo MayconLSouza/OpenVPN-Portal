@@ -29,18 +29,22 @@ public class CertificadoService {
     private final ICertificadoRepository certificadoRepository;
     private final String pythonScriptPath;
     private final String certificadosPath;
+    private final String deleteScriptPath;
 
     public CertificadoService(
         ICertificadoRepository certificadoRepository,
         @Value("${vpn.python.script.path}") String pythonScriptPath,
-        @Value("${vpn.certificados.path}") String certificadosPath
+        @Value("${vpn.certificados.path}") String certificadosPath,
+        @Value("${vpn.delete.script.path}") String deleteScriptPath
     ) {
         this.certificadoRepository = certificadoRepository;
         this.pythonScriptPath = pythonScriptPath;
         this.certificadosPath = certificadosPath;
+        this.deleteScriptPath = deleteScriptPath;
         
         logger.info("CertificadoService inicializado com:");
         logger.info("Python Script Path: {}", pythonScriptPath);
+        logger.info("Delete Script Path: {}", deleteScriptPath);
         logger.info("Certificados Path: {}", certificadosPath);
     }
 
@@ -155,8 +159,55 @@ public class CertificadoService {
                 .orElseThrow(() -> new RuntimeException("Certificado não encontrado"));
     }
     
+    @Transactional
     public void deletarCertificado(String id) {
-        certificadoRepository.deleteById(id);
+        logger.info("Iniciando processo de remoção do certificado: {}", id);
+        
+        // Verifica se o script existe
+        File scriptFile = new File(deleteScriptPath);
+        if (!scriptFile.exists()) {
+            logger.error("Script Python de remoção não encontrado em: {}", deleteScriptPath);
+            throw new RuntimeException("Script Python de remoção não encontrado");
+        }
+        
+        try {
+            // Executa o script Python para remover os arquivos
+            ProcessBuilder processBuilder = new ProcessBuilder("python3", deleteScriptPath, id);
+            processBuilder.redirectErrorStream(true);
+            
+            logger.info("Executando comando: python3 {} {}", deleteScriptPath, id);
+            
+            Process process = processBuilder.start();
+            
+            // Captura a saída do processo
+            StringBuilder output = new StringBuilder();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    output.append(line).append("\n");
+                }
+            }
+            
+            int exitCode = process.waitFor();
+            logger.info("Script Python de remoção finalizado com código: {}", exitCode);
+            logger.info("Saída do script:\n{}", output.toString());
+            
+            if (exitCode != 0) {
+                logger.error("Erro ao remover arquivos do certificado. Código de saída: {}", exitCode);
+                throw new RuntimeException("Erro ao remover arquivos do certificado: " + output.toString());
+            }
+            
+            // Remove o registro do banco de dados
+            certificadoRepository.deleteById(id);
+            logger.info("Certificado removido com sucesso: {}", id);
+            
+        } catch (IOException | InterruptedException e) {
+            logger.error("Erro ao executar script de remoção", e);
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+            throw new RuntimeException("Erro ao remover certificado", e);
+        }
     }
     
     public List<Certificado> buscarTodosCertificados() {

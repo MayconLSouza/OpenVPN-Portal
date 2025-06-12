@@ -3,6 +3,7 @@ package com.painelvpn.controller;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -10,12 +11,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.painelvpn.model.Certificado;
 import com.painelvpn.model.Funcionario;
 import com.painelvpn.service.CertificadoService;
 import com.painelvpn.service.FuncionarioService;
+import com.painelvpn.dto.CertificadoDTO;
 
 @RestController
 @RequestMapping("/api/certificados")
@@ -41,7 +44,8 @@ public class CertificadoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Certificado>> listarCertificados(
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<CertificadoDTO>> listarCertificados(
             @AuthenticationPrincipal String funcionarioId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim,
@@ -54,10 +58,14 @@ public class CertificadoController {
         } else if (identificador != null) {
             certificados = certificadoService.buscarPorIdentificador(identificador);
         } else {
-            certificados = certificadoService.buscarPorFuncionario(funcionarioId);
+            certificados = certificadoService.buscarTodosCertificados();
         }
         
-        return ResponseEntity.ok(certificados);
+        List<CertificadoDTO> certificadosDTO = certificados.stream()
+            .map(CertificadoDTO::new)
+            .collect(Collectors.toList());
+        
+        return ResponseEntity.ok(certificadosDTO);
     }
 
     @GetMapping("/{id}/download")
