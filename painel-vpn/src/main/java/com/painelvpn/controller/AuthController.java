@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.painelvpn.dto.LoginRequest;
 import com.painelvpn.service.AuthService;
 import com.painelvpn.service.JwtService;
+import com.painelvpn.model.Funcionario;
+import com.painelvpn.repository.IFuncionarioRepository;
 
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -32,16 +34,19 @@ public class AuthController {
     private final AuthService authService;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+    private final IFuncionarioRepository funcionarioRepository;
 
     public AuthController(
             AuthenticationManager authenticationManager,
             AuthService authService,
             JwtService jwtService,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder,
+            IFuncionarioRepository funcionarioRepository) {
         this.authenticationManager = authenticationManager;
         this.authService = authService;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
+        this.funcionarioRepository = funcionarioRepository;
     }
 
     @PostMapping("/login")
@@ -58,7 +63,13 @@ public class AuthController {
 
             // Se chegou aqui, a autenticação foi bem-sucedida
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            String token = jwtService.generateToken(userDetails);
+            
+            // Busca o ID do funcionário
+            Funcionario funcionario = funcionarioRepository.findByUsuario(request.getUsuario())
+                .orElseThrow(() -> new RuntimeException("Funcionário não encontrado"));
+            
+            // Gera o token incluindo o ID do funcionário
+            String token = jwtService.generateToken(userDetails, funcionario.getIdFuncionario());
             
             // Registra o login bem-sucedido
             authService.handleSuccessfulLogin(request.getUsuario());
