@@ -8,16 +8,8 @@ export interface ConfirmDialogData {
 
 @Component({
   selector: 'app-confirm-dialog',
-  template: `
-    <h2 mat-dialog-title>{{data.title}}</h2>
-    <div mat-dialog-content>
-      <p>{{data.message}}</p>
-    </div>
-    <div mat-dialog-actions align="end">
-      <button mat-button (click)="onNoClick()">Cancelar</button>
-      <button mat-raised-button color="warn" (click)="onYesClick()">Confirmar</button>
-    </div>
-  `
+  templateUrl: './confirm-dialog.component.html',
+  styleUrls: ['./confirm-dialog.component.scss']
 })
 export class ConfirmDialogComponent {
   constructor(

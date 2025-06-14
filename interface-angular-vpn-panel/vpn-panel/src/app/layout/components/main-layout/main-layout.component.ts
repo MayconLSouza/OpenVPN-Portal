@@ -2,34 +2,8 @@ import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-main-layout',
-  template: `
-    <mat-sidenav-container class="sidenav-container">
-      <mat-sidenav #sidenav mode="side" opened class="sidenav">
-        <app-sidebar></app-sidebar>
-      </mat-sidenav>
-
-      <mat-sidenav-content>
-        <app-navbar (toggleSidenav)="sidenav.toggle()"></app-navbar>
-        
-        <div class="content">
-          <router-outlet></router-outlet>
-        </div>
-      </mat-sidenav-content>
-    </mat-sidenav-container>
-  `,
-  styles: [`
-    .sidenav-container {
-      height: 100vh;
-    }
-
-    .sidenav {
-      width: 250px;
-    }
-
-    .content {
-      padding: 20px;
-    }
-  `]
+  templateUrl: './main-layout.component.html',
+  styleUrls: ['./main-layout.component.scss']
 })
 export class MainLayoutComponent implements OnInit {
   constructor() {}

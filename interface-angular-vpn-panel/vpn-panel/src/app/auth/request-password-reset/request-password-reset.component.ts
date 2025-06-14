@@ -6,55 +6,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-request-password-reset',
-  template: `
-    <div class="container">
-      <mat-card class="password-reset-card">
-        <mat-card-header>
-          <mat-card-title>Recuperação de Senha</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <form [formGroup]="requestForm" (ngSubmit)="onSubmit()">
-            <mat-form-field appearance="fill">
-              <mat-label>Nome de Usuário</mat-label>
-              <input matInput formControlName="username" required>
-              <mat-error *ngIf="requestForm.get('username')?.hasError('required')">
-                Nome de usuário é obrigatório
-              </mat-error>
-            </mat-form-field>
-            
-            <div class="button-container">
-              <button mat-button type="button" (click)="goBack()">Voltar</button>
-              <button mat-raised-button color="primary" type="submit" [disabled]="requestForm.invalid">
-                Enviar
-              </button>
-            </div>
-          </form>
-        </mat-card-content>
-      </mat-card>
-    </div>
-  `,
-  styles: [`
-    .container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background-color: #f5f5f5;
-    }
-    .password-reset-card {
-      min-width: 300px;
-      padding: 20px;
-    }
-    mat-form-field {
-      width: 100%;
-      margin-bottom: 20px;
-    }
-    .button-container {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
-    }
-  `]
+  templateUrl: './request-password-reset.component.html',
+  styleUrls: ['./request-password-reset.component.scss']
 })
 export class RequestPasswordResetComponent {
   requestForm: FormGroup;
