@@ -1,0 +1,82 @@
+<div class="container">
+  <div class="header">
+    <h1>Funcionários</h1>
+    <button mat-raised-button color="primary" (click)="cadastrarFuncionario()">
+      <mat-icon>add</mat-icon>
+      Novo Funcionário
+    </button>
+  </div>
+
+  <mat-table [dataSource]="funcionarios" class="mat-elevation-z8">
+    <!-- Nome Column -->
+    <ng-container matColumnDef="nome">
+      <mat-header-cell *matHeaderCellDef> Nome </mat-header-cell>
+      <mat-cell *matCellDef="let funcionario"> {{funcionario.nome}} </mat-cell>
+    </ng-container>
+
+    <!-- Email Column -->
+    <ng-container matColumnDef="email">
+      <mat-header-cell *matHeaderCellDef> Email </mat-header-cell>
+      <mat-cell *matCellDef="let funcionario"> {{funcionario.email}} </mat-cell>
+    </ng-container>
+
+    <!-- Cargo Column -->
+    <ng-container matColumnDef="cargo">
+      <mat-header-cell *matHeaderCellDef> Cargo </mat-header-cell>
+      <mat-cell *matCellDef="let funcionario"> {{funcionario.cargo}} </mat-cell>
+    </ng-container>
+
+    <!-- Admin Column -->
+    <ng-container matColumnDef="admin">
+      <mat-header-cell *matHeaderCellDef> Admin </mat-header-cell>
+      <mat-cell *matCellDef="let funcionario">
+        <mat-icon *ngIf="funcionario.admin" color="primary">check_circle</mat-icon>
+        <mat-icon *ngIf="!funcionario.admin" color="warn">cancel</mat-icon>
+      </mat-cell>
+    </ng-container>
+
+    <!-- Ativo Column -->
+    <ng-container matColumnDef="ativo">
+      <mat-header-cell *matHeaderCellDef> Ativo </mat-header-cell>
+      <mat-cell *matCellDef="let funcionario">
+        <mat-icon *ngIf="funcionario.ativo" color="primary">check_circle</mat-icon>
+        <mat-icon *ngIf="!funcionario.ativo" color="warn">cancel</mat-icon>
+      </mat-cell>
+    </ng-container>
+
+    <!-- Ações Column -->
+    <ng-container matColumnDef="acoes">
+      <mat-header-cell *matHeaderCellDef> Ações </mat-header-cell>
+      <mat-cell *matCellDef="let funcionario">
+        <button mat-icon-button [matMenuTriggerFor]="menu" color="primary">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item *ngIf="!funcionario.admin" (click)="elegerAdmin(funcionario)">
+            <mat-icon>admin_panel_settings</mat-icon>
+            <span>Eleger Admin</span>
+          </button>
+          <button mat-menu-item *ngIf="funcionario.admin" (click)="revogarAdmin(funcionario)">
+            <mat-icon>admin_panel_settings</mat-icon>
+            <span>Revogar Admin</span>
+          </button>
+          <button mat-menu-item *ngIf="!funcionario.ativo" (click)="gerenciarAcesso(funcionario, true)">
+            <mat-icon>lock_open</mat-icon>
+            <span>Reativar Acesso</span>
+          </button>
+          <button mat-menu-item *ngIf="funcionario.ativo" (click)="gerenciarAcesso(funcionario, false)">
+            <mat-icon>lock</mat-icon>
+            <span>Revogar Acesso</span>
+          </button>
+          <button mat-menu-item (click)="remover(funcionario)">
+            <mat-icon>delete</mat-icon>
+            <span>Remover</span>
+          </button>
+        </mat-menu>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+</div> 
