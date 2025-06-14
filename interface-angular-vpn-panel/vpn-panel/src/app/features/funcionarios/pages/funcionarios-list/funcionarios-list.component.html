@@ -7,76 +7,114 @@
     </button>
   </div>
 
-  <mat-table [dataSource]="funcionarios" class="mat-elevation-z8">
-    <!-- Nome Column -->
-    <ng-container matColumnDef="nome">
-      <mat-header-cell *matHeaderCellDef> Nome </mat-header-cell>
-      <mat-cell *matCellDef="let funcionario"> {{funcionario.nome}} </mat-cell>
-    </ng-container>
+  <div class="filter-container">
+    <mat-form-field class="filter-field">
+      <mat-label>Filtrar</mat-label>
+      <input matInput [(ngModel)]="termoFiltro" placeholder="Digite para filtrar...">
+      <button *ngIf="termoFiltro" matSuffix mat-icon-button (click)="limparFiltro()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
 
-    <!-- Email Column -->
-    <ng-container matColumnDef="email">
-      <mat-header-cell *matHeaderCellDef> Email </mat-header-cell>
-      <mat-cell *matCellDef="let funcionario"> {{funcionario.email}} </mat-cell>
-    </ng-container>
+    <button mat-raised-button color="primary" (click)="aplicarFiltro()" [disabled]="carregando">
+      <mat-icon>search</mat-icon>
+      Filtrar
+    </button>
+  </div>
 
-    <!-- Cargo Column -->
-    <ng-container matColumnDef="cargo">
-      <mat-header-cell *matHeaderCellDef> Cargo </mat-header-cell>
-      <mat-cell *matCellDef="let funcionario"> {{funcionario.cargo}} </mat-cell>
-    </ng-container>
+  <div class="mat-elevation-z8">
+    <div *ngIf="carregando" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <span>Carregando...</span>
+    </div>
 
-    <!-- Admin Column -->
-    <ng-container matColumnDef="admin">
-      <mat-header-cell *matHeaderCellDef> Admin </mat-header-cell>
-      <mat-cell *matCellDef="let funcionario">
-        <mat-icon *ngIf="funcionario.admin" color="primary">check_circle</mat-icon>
-        <mat-icon *ngIf="!funcionario.admin" color="warn">cancel</mat-icon>
-      </mat-cell>
-    </ng-container>
+    <div *ngIf="erro" class="error-container">
+      <mat-icon color="warn">error_outline</mat-icon>
+      <span>Ocorreu um erro ao carregar os funcionários. Tente novamente.</span>
+      <button mat-raised-button color="primary" (click)="carregarFuncionarios()">
+        <mat-icon>refresh</mat-icon>
+        Tentar Novamente
+      </button>
+    </div>
 
-    <!-- Ativo Column -->
-    <ng-container matColumnDef="ativo">
-      <mat-header-cell *matHeaderCellDef> Ativo </mat-header-cell>
-      <mat-cell *matCellDef="let funcionario">
-        <mat-icon *ngIf="funcionario.ativo" color="primary">check_circle</mat-icon>
-        <mat-icon *ngIf="!funcionario.ativo" color="warn">cancel</mat-icon>
-      </mat-cell>
-    </ng-container>
+    <table mat-table [dataSource]="dataSource" matSort *ngIf="!carregando && !erro">
+      <!-- Nome Column -->
+      <ng-container matColumnDef="nome">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Nome </th>
+        <td mat-cell *matCellDef="let funcionario"> {{funcionario.nome}} </td>
+      </ng-container>
 
-    <!-- Ações Column -->
-    <ng-container matColumnDef="acoes">
-      <mat-header-cell *matHeaderCellDef> Ações </mat-header-cell>
-      <mat-cell *matCellDef="let funcionario">
-        <button mat-icon-button [matMenuTriggerFor]="menu" color="primary">
-          <mat-icon>more_vert</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu">
-          <button mat-menu-item *ngIf="!funcionario.admin" (click)="elegerAdmin(funcionario)">
-            <mat-icon>admin_panel_settings</mat-icon>
-            <span>Eleger Admin</span>
+      <!-- Email Column -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Email </th>
+        <td mat-cell *matCellDef="let funcionario"> {{funcionario.email}} </td>
+      </ng-container>
+
+      <!-- Cargo Column -->
+      <ng-container matColumnDef="cargo">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Cargo </th>
+        <td mat-cell *matCellDef="let funcionario"> {{funcionario.cargo}} </td>
+      </ng-container>
+
+      <!-- Admin Column -->
+      <ng-container matColumnDef="admin">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Admin </th>
+        <td mat-cell *matCellDef="let funcionario">
+          <mat-icon *ngIf="funcionario.admin" color="primary">check_circle</mat-icon>
+          <mat-icon *ngIf="!funcionario.admin" color="warn">cancel</mat-icon>
+        </td>
+      </ng-container>
+
+      <!-- Ativo Column -->
+      <ng-container matColumnDef="ativo">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Ativo </th>
+        <td mat-cell *matCellDef="let funcionario">
+          <mat-icon *ngIf="funcionario.ativo" color="primary">check_circle</mat-icon>
+          <mat-icon *ngIf="!funcionario.ativo" color="warn">cancel</mat-icon>
+        </td>
+      </ng-container>
+
+      <!-- Ações Column -->
+      <ng-container matColumnDef="acoes">
+        <th mat-header-cell *matHeaderCellDef> Ações </th>
+        <td mat-cell *matCellDef="let funcionario">
+          <button mat-icon-button [matMenuTriggerFor]="menu" color="primary">
+            <mat-icon>more_vert</mat-icon>
           </button>
-          <button mat-menu-item *ngIf="funcionario.admin" (click)="revogarAdmin(funcionario)">
-            <mat-icon>admin_panel_settings</mat-icon>
-            <span>Revogar Admin</span>
-          </button>
-          <button mat-menu-item *ngIf="!funcionario.ativo" (click)="gerenciarAcesso(funcionario, true)">
-            <mat-icon>lock_open</mat-icon>
-            <span>Reativar Acesso</span>
-          </button>
-          <button mat-menu-item *ngIf="funcionario.ativo" (click)="gerenciarAcesso(funcionario, false)">
-            <mat-icon>lock</mat-icon>
-            <span>Revogar Acesso</span>
-          </button>
-          <button mat-menu-item (click)="remover(funcionario)">
-            <mat-icon>delete</mat-icon>
-            <span>Remover</span>
-          </button>
-        </mat-menu>
-      </mat-cell>
-    </ng-container>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item *ngIf="!funcionario.admin" (click)="elegerAdmin(funcionario)">
+              <mat-icon>admin_panel_settings</mat-icon>
+              <span>Eleger Admin</span>
+            </button>
+            <button mat-menu-item *ngIf="funcionario.admin" (click)="revogarAdmin(funcionario)">
+              <mat-icon>admin_panel_settings</mat-icon>
+              <span>Revogar Admin</span>
+            </button>
+            <button mat-menu-item *ngIf="!funcionario.ativo" (click)="gerenciarAcesso(funcionario, true)">
+              <mat-icon>lock_open</mat-icon>
+              <span>Reativar Acesso</span>
+            </button>
+            <button mat-menu-item *ngIf="funcionario.ativo" (click)="gerenciarAcesso(funcionario, false)">
+              <mat-icon>lock</mat-icon>
+              <span>Revogar Acesso</span>
+            </button>
+            <button mat-menu-item (click)="remover(funcionario)">
+              <mat-icon>delete</mat-icon>
+              <span>Remover</span>
+            </button>
+          </mat-menu>
+        </td>
+      </ng-container>
 
-    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-  </mat-table>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <div *ngIf="nenhumResultado && !carregando && !erro" class="no-results">
+      <mat-icon>search_off</mat-icon>
+      <span>Não existem funcionários no Banco!</span>
+    </div>
+
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Selecione a página de funcionários"></mat-paginator>
+  </div>
 </div> 

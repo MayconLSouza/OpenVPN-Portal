@@ -9,6 +9,8 @@ import com.painelvpn.service.FuncionarioService;
 
 import jakarta.validation.Valid;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/funcionarios")
 public class FuncionarioController {
@@ -17,6 +19,12 @@ public class FuncionarioController {
 
     public FuncionarioController(FuncionarioService funcionarioService) {
         this.funcionarioService = funcionarioService;
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Funcionario>> listarFuncionarios() {
+        return ResponseEntity.ok(funcionarioService.listarTodos());
     }
 
     @PostMapping

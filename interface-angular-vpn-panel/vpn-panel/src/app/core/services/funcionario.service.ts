@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
@@ -32,6 +32,14 @@ export class FuncionarioService {
 
   listar(): Observable<Funcionario[]> {
     return this.http.get<Funcionario[]>(this.apiUrl);
+  }
+
+  filtrar(termo: string): Observable<Funcionario[]> {
+    let params = new HttpParams();
+    if (termo) {
+      params = params.set('filtro', termo);
+    }
+    return this.http.get<Funcionario[]>(this.apiUrl, { params });
   }
 
   cadastrarFuncionario(funcionario: FuncionarioCreate): Observable<Funcionario> {
