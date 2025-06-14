@@ -46,7 +46,7 @@ public class FuncionarioController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> removerFuncionario(@PathVariable String id) {
-        funcionarioService.remover(id);
+        funcionarioService.removerFuncionario(id);
         return ResponseEntity.noContent().build();
     }
 

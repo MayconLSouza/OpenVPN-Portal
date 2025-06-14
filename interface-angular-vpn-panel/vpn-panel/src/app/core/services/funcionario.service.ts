@@ -54,7 +54,8 @@ export class FuncionarioService {
     return this.http.put<Funcionario>(`${this.apiUrl}/${id}/reativar-acesso`, {});
   }
 
-  remover(id: string): Observable<void> {
+  removerFuncionario(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
 } 

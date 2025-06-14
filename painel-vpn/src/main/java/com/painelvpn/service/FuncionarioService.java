@@ -47,7 +47,7 @@ public class FuncionarioService {
     }
 
     @Transactional
-    public void remover(String id) {
+    public void removerFuncionario(String id) {
         Funcionario funcionario = buscarPorId(id);
         if (funcionario.getCertificados() != null && !funcionario.getCertificados().isEmpty()) {
             throw new RuntimeException("Não é possível remover o funcionário pois ele possui certificados associados");
