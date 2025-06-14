@@ -1,3 +1,75 @@
 .container {
   padding: 20px;
+}
+
+.certificados-container {
+  max-width: 900px;
+  margin: 32px auto;
+  padding: 24px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+.header-actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.header-actions input[type="text"],
+.header-actions input[type="date"] {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  min-width: 180px;
+}
+
+.certificados-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+.certificados-table th, .certificados-table td {
+  padding: 10px 8px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+.certificados-table th {
+  background: #f5f5f5;
+}
+.certificados-table tr:last-child td {
+  border-bottom: none;
+}
+.certificados-table .empty {
+  text-align: center;
+  color: #888;
+}
+
+.progress-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  margin: 32px 0;
+}
+
+@media (max-width: 700px) {
+  .certificados-container {
+    padding: 8px;
+  }
+  .header-actions {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+  .certificados-table th, .certificados-table td {
+    padding: 6px 4px;
+  }
 } 
