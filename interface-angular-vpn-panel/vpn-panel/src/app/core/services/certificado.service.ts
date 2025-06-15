@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, forkJoin, from, of } from 'rxjs';
 import { Certificado } from '../models/certificado.model';
+import { concatMap, catchError, toArray } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -19,8 +20,19 @@ export class CertificadoService {
     return this.http.post(this.apiUrl, {});
   }
 
-  remover(ids: string[]): Observable<any> {
-    return this.http.request('delete', this.apiUrl, { body: { ids } });
+  remover(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  removerVarios(ids: string[]): Observable<any[]> {
+    return from(ids).pipe(
+      concatMap(id =>
+        this.remover(id).pipe(
+          catchError(error => of({ id, error }))
+        )
+      ),
+      toArray()
+    );
   }
 
   baixar(id: string): Observable<Blob> {

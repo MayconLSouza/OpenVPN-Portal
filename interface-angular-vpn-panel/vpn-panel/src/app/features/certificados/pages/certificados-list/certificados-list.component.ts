@@ -3,6 +3,11 @@ import { CertificadoService } from 'src/app/core/services/certificado.service';
 import { Certificado } from 'src/app/core/models/certificado.model';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from 'src/app/shared/components/confirm-dialog/confirm-dialog.component';
+import { of, Observable, forkJoin } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { from } from 'rxjs';
+import { concatMap, toArray } from 'rxjs/operators';
 
 @Component({
   selector: 'app-certificados-list',
@@ -20,7 +25,8 @@ export class CertificadosListComponent implements OnInit {
 
   constructor(
     private certificadoService: CertificadoService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -96,9 +102,26 @@ export class CertificadosListComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.certificadoService.remover(ids).subscribe(() => {
+        this.certificadoService.removerVarios(ids).subscribe(results => {
+          console.log('Resultados da remoção:', results);
           this.selecionados.clear();
           this.carregarCertificados();
+
+          const erros = results.filter(r => r && r.error);
+          if (erros.length) {
+            this.snackBar.open(
+              `Erro ao remover ${erros.length} certificado(s).`,
+              'Fechar',
+              { duration: 4000 }
+            );
+            console.log('Erros detalhados:', erros);
+          } else {
+            this.snackBar.open(
+              'Certificados removidos com sucesso!',
+              'Fechar',
+              { duration: 3000 }
+            );
+          }
         });
       }
     });
