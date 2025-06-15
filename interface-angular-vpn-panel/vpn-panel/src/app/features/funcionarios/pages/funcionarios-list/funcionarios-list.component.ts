@@ -140,7 +140,6 @@ export class FuncionariosListComponent implements OnInit {
   }
 
   gerenciarAcesso(funcionario: Funcionario, ativar: boolean) {
-    console.log('Funcionário:', funcionario);
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
         title: ativar ? 'Confirmar Reativação' : 'Confirmar Revogação',
@@ -152,7 +151,6 @@ export class FuncionariosListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log('ID do funcionário:', funcionario.idFuncionario);
         const action = ativar 
           ? this.funcionarioService.reativarAcesso(funcionario.idFuncionario)
           : this.funcionarioService.revogarAcesso(funcionario.idFuncionario);
