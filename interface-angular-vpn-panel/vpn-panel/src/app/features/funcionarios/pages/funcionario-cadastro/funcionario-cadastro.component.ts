@@ -23,11 +23,11 @@ export class FuncionarioCadastroComponent implements OnInit {
     this.form = this.fb.group({
       nome: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
-      usuario: ['', [Validators.required, Validators.minLength(3)]],
-      cargo: ['', Validators.required],
-      senha: ['', [Validators.required, Validators.minLength(6)]],
+      usuario: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30)]],
+      senha: ['', [Validators.required, Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)]],
       confirmarSenha: ['', Validators.required],
-      admin: [false]
+      admin: [false],
+      status: ['ATIVO']
     }, {
       validators: this.senhasIguais
     });
@@ -53,9 +53,9 @@ export class FuncionarioCadastroComponent implements OnInit {
         nome: this.form.get('nome')?.value,
         email: this.form.get('email')?.value,
         usuario: this.form.get('usuario')?.value,
-        cargo: this.form.get('cargo')?.value,
         senha: this.form.get('senha')?.value,
-        admin: this.form.get('admin')?.value
+        admin: this.form.get('admin')?.value,
+        status: this.form.get('status')?.value
       };
 
       this.funcionarioService.cadastrarFuncionario(funcionario).subscribe({
@@ -63,8 +63,9 @@ export class FuncionarioCadastroComponent implements OnInit {
           this.snackBar.open('Funcionário cadastrado com sucesso!', 'OK', { duration: 3000 });
           this.router.navigate(['/funcionarios']);
         },
-        error: () => {
-          this.snackBar.open('Erro ao cadastrar funcionário', 'OK', { duration: 3000 });
+        error: (error) => {
+          console.error('Erro ao cadastrar funcionário:', error);
+          this.snackBar.open(error.error?.message || 'Erro ao cadastrar funcionário', 'OK', { duration: 3000 });
         }
       });
     }

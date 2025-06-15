@@ -7,8 +7,6 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { FuncionarioService, Funcionario } from '../../../../core/services/funcionario.service';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
-import { catchError, finalize } from 'rxjs/operators';
-import { of } from 'rxjs';
 
 @Component({
   selector: 'app-funcionarios-list',
@@ -16,7 +14,7 @@ import { of } from 'rxjs';
   styleUrls: ['./funcionarios-list.component.scss']
 })
 export class FuncionariosListComponent implements OnInit {
-  displayedColumns: string[] = ['nome', 'email', 'cargo', 'admin', 'ativo', 'acoes'];
+  displayedColumns: string[] = ['nome', 'email', 'usuario', 'admin', 'status', 'acoes'];
   dataSource: MatTableDataSource<Funcionario>;
   termoFiltro: string = '';
   carregando: boolean = false;
@@ -49,22 +47,19 @@ export class FuncionariosListComponent implements OnInit {
     this.nenhumResultado = false;
     this.erro = false;
 
-    this.funcionarioService.listar()
-      .pipe(
-        catchError(error => {
-          console.error('Erro ao carregar funcionários:', error);
-          this.erro = true;
-          this.snackBar.open('Erro ao carregar funcionários', 'OK', { duration: 3000 });
-          return of([]);
-        }),
-        finalize(() => {
-          this.carregando = false;
-        })
-      )
-      .subscribe(funcionarios => {
+    this.funcionarioService.listar().subscribe({
+      next: (funcionarios) => {
         this.dataSource.data = funcionarios;
         this.nenhumResultado = funcionarios.length === 0;
-      });
+        this.carregando = false;
+      },
+      error: (error) => {
+        console.error('Erro ao carregar funcionários:', error);
+        this.erro = true;
+        this.snackBar.open(error.message || 'Erro ao carregar funcionários', 'OK', { duration: 3000 });
+        this.carregando = false;
+      }
+    });
   }
 
   aplicarFiltro() {
@@ -72,22 +67,19 @@ export class FuncionariosListComponent implements OnInit {
     this.nenhumResultado = false;
     this.erro = false;
 
-    this.funcionarioService.filtrar(this.termoFiltro)
-      .pipe(
-        catchError(error => {
-          console.error('Erro ao filtrar funcionários:', error);
-          this.erro = true;
-          this.snackBar.open('Erro ao filtrar funcionários', 'OK', { duration: 3000 });
-          return of([]);
-        }),
-        finalize(() => {
-          this.carregando = false;
-        })
-      )
-      .subscribe(funcionarios => {
+    this.funcionarioService.filtrar(this.termoFiltro).subscribe({
+      next: (funcionarios) => {
         this.dataSource.data = funcionarios;
         this.nenhumResultado = funcionarios.length === 0;
-      });
+        this.carregando = false;
+      },
+      error: (error) => {
+        console.error('Erro ao filtrar funcionários:', error);
+        this.erro = true;
+        this.snackBar.open(error.message || 'Erro ao filtrar funcionários', 'OK', { duration: 3000 });
+        this.carregando = false;
+      }
+    });
   }
 
   limparFiltro() {
@@ -100,37 +92,51 @@ export class FuncionariosListComponent implements OnInit {
   }
 
   elegerAdmin(funcionario: Funcionario) {
-    this.funcionarioService.elegerAdministrador(funcionario.id)
-      .pipe(
-        catchError(error => {
-          console.error('Erro ao eleger administrador:', error);
-          this.snackBar.open('Erro ao eleger administrador', 'OK', { duration: 3000 });
-          return of(null);
-        })
-      )
-      .subscribe(result => {
-        if (result) {
-          this.snackBar.open('Funcionário eleito como administrador com sucesso!', 'OK', { duration: 3000 });
-          this.carregarFuncionarios();
-        }
-      });
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Confirmar Eleição',
+        message: `Deseja realmente eleger ${funcionario.nome} como administrador?`
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.funcionarioService.elegerAdministrador(funcionario.id).subscribe({
+          next: () => {
+            this.snackBar.open('Funcionário eleito como administrador com sucesso!', 'OK', { duration: 3000 });
+            this.carregarFuncionarios();
+          },
+          error: (error) => {
+            console.error('Erro ao eleger administrador:', error);
+            this.snackBar.open(error.message || 'Erro ao eleger administrador', 'OK', { duration: 3000 });
+          }
+        });
+      }
+    });
   }
 
   revogarAdmin(funcionario: Funcionario) {
-    this.funcionarioService.revogarAdministrador(funcionario.id)
-      .pipe(
-        catchError(error => {
-          console.error('Erro ao revogar administrador:', error);
-          this.snackBar.open('Erro ao revogar permissão de administrador', 'OK', { duration: 3000 });
-          return of(null);
-        })
-      )
-      .subscribe(result => {
-        if (result) {
-          this.snackBar.open('Permissão de administrador revogada com sucesso!', 'OK', { duration: 3000 });
-          this.carregarFuncionarios();
-        }
-      });
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Confirmar Revogação',
+        message: `Deseja realmente revogar a permissão de administrador de ${funcionario.nome}?`
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.funcionarioService.revogarAdministrador(funcionario.id).subscribe({
+          next: () => {
+            this.snackBar.open('Permissão de administrador revogada com sucesso!', 'OK', { duration: 3000 });
+            this.carregarFuncionarios();
+          },
+          error: (error) => {
+            console.error('Erro ao revogar administrador:', error);
+            this.snackBar.open(error.message || 'Erro ao revogar permissão de administrador', 'OK', { duration: 3000 });
+          }
+        });
+      }
+    });
   }
 
   gerenciarAcesso(funcionario: Funcionario, ativar: boolean) {
@@ -149,32 +155,28 @@ export class FuncionariosListComponent implements OnInit {
           ? this.funcionarioService.reativarAcesso(funcionario.id)
           : this.funcionarioService.revogarAcesso(funcionario.id);
 
-        action
-          .pipe(
-            catchError(error => {
-              console.error('Erro ao gerenciar acesso:', error);
-              this.snackBar.open(
-                ativar
-                  ? 'Erro ao reativar acesso do funcionário'
-                  : 'Erro ao revogar acesso do funcionário',
-                'OK',
-                { duration: 3000 }
-              );
-              return of(null);
-            })
-          )
-          .subscribe(result => {
-            if (result) {
-              this.snackBar.open(
-                ativar 
-                  ? 'Acesso do funcionário reativado com sucesso!'
-                  : 'Acesso do funcionário revogado com sucesso!',
-                'OK',
-                { duration: 3000 }
-              );
-              this.carregarFuncionarios();
-            }
-          });
+        action.subscribe({
+          next: () => {
+            this.snackBar.open(
+              ativar 
+                ? 'Acesso do funcionário reativado com sucesso!'
+                : 'Acesso do funcionário revogado com sucesso!',
+              'OK',
+              { duration: 3000 }
+            );
+            this.carregarFuncionarios();
+          },
+          error: (error) => {
+            console.error('Erro ao gerenciar acesso:', error);
+            this.snackBar.open(
+              error.message || (ativar
+                ? 'Erro ao reativar acesso do funcionário'
+                : 'Erro ao revogar acesso do funcionário'),
+              'OK',
+              { duration: 3000 }
+            );
+          }
+        });
       }
     });
   }
@@ -189,20 +191,16 @@ export class FuncionariosListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.funcionarioService.removerFuncionario(funcionario.id)
-          .pipe(
-            catchError(error => {
-              console.error('Erro ao remover funcionário:', error);
-              this.snackBar.open('Erro ao remover funcionário', 'OK', { duration: 3000 });
-              return of(null);
-            })
-          )
-          .subscribe(result => {
-            if (result !== null) {
-              this.snackBar.open('Funcionário removido com sucesso!', 'OK', { duration: 3000 });
-              this.carregarFuncionarios();
-            }
-          });
+        this.funcionarioService.removerFuncionario(funcionario.id).subscribe({
+          next: () => {
+            this.snackBar.open('Funcionário removido com sucesso!', 'OK', { duration: 3000 });
+            this.carregarFuncionarios();
+          },
+          error: (error) => {
+            console.error('Erro ao remover funcionário:', error);
+            this.snackBar.open(error.message || 'Erro ao remover funcionário', 'OK', { duration: 3000 });
+          }
+        });
       }
     });
   }

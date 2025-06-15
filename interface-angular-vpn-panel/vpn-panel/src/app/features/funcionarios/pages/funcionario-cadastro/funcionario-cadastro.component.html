@@ -38,6 +38,9 @@
           <mat-error *ngIf="form.get('usuario')?.hasError('minlength')">
             Usuário deve ter no mínimo 3 caracteres
           </mat-error>
+          <mat-error *ngIf="form.get('usuario')?.hasError('maxlength')">
+            Usuário deve ter no máximo 30 caracteres
+          </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
@@ -57,8 +60,8 @@
           <mat-error *ngIf="form.get('senha')?.hasError('required')">
             Senha é obrigatória
           </mat-error>
-          <mat-error *ngIf="form.get('senha')?.hasError('minlength')">
-            Senha deve ter no mínimo 6 caracteres
+          <mat-error *ngIf="form.get('senha')?.hasError('pattern')">
+            A senha deve conter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais
           </mat-error>
         </mat-form-field>
 
