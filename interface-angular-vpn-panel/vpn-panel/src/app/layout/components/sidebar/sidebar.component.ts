@@ -14,5 +14,13 @@ export class SidebarComponent implements OnInit {
 
   constructor(private authService: AuthService) {}
 
-  ngOnInit(): void {}
-} 
+  ngOnInit(): void {
+    this.authService.currentUser$.subscribe(user => {
+      console.log('🔍 Usuário carregado no Sidebar:', user);
+    });
+
+    this.isAdmin$.subscribe(isAdmin => {
+      console.log('🛡️ isAdmin no Sidebar:', isAdmin);
+    });
+  }
+}

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import com.painelvpn.dto.LoginRequest;
 import com.painelvpn.service.AuthService;
@@ -24,6 +25,7 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -102,6 +104,22 @@ public class AuthController {
         logger.info("Senha criptografada gerada");
         return ResponseEntity.ok(encoded);
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser(Authentication authentication) {
+        if (authentication == null || !(authentication.getPrincipal() instanceof String)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token inválido");
+        }
+        String funcionarioId = (String) authentication.getPrincipal();
+        Funcionario funcionario = funcionarioRepository.findById(funcionarioId)
+            .orElse(null);
+        if (funcionario == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário não encontrado");
+        }
+        // Por segurança, não envie a senha no JSON
+        funcionario.setSenha("");
+        return ResponseEntity.ok(funcionario);
+    }
 }
 
 class LoginResponse {
@@ -128,7 +146,7 @@ class ErrorResponse {
     }
 
     public String getMessage() {
-        return message;
+        return this.message;
     }
 
     public void setMessage(String message) {

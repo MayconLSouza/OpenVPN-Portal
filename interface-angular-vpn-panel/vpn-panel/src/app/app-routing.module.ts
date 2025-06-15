@@ -34,7 +34,9 @@ const routes: Routes = [
       },
       {
         path: 'funcionarios',
-        loadChildren: () => import('./features/funcionarios/funcionarios.module').then(m => m.FuncionariosModule)
+        loadChildren: () => import('./features/funcionarios/funcionarios.module').then(m => m.FuncionariosModule),
+        canActivate: [AuthGuard],
+        data: { requiresAdmin: true }
       },
       {
         path: 'auditoria',

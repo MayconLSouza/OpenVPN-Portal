@@ -45,8 +45,8 @@
       <ng-container matColumnDef="admin">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Admin </th>
         <td mat-cell *matCellDef="let funcionario">
-          <mat-icon *ngIf="funcionario.admin" color="primary">check_circle</mat-icon>
-          <mat-icon *ngIf="!funcionario.admin" color="warn">cancel</mat-icon>
+          <mat-icon *ngIf="funcionario.isAdmin" color="primary">check_circle</mat-icon>
+          <mat-icon *ngIf="!funcionario.isAdmin" color="warn">cancel</mat-icon>
         </td>
       </ng-container>
 
@@ -67,11 +67,11 @@
             <mat-icon>more_vert</mat-icon>
           </button>
           <mat-menu #menu="matMenu">
-            <button mat-menu-item *ngIf="!funcionario.admin" (click)="elegerAdmin(funcionario)">
+            <button mat-menu-item *ngIf="!funcionario.isAdmin" (click)="elegerAdmin(funcionario)">
               <mat-icon>admin_panel_settings</mat-icon>
               <span>Eleger Admin</span>
             </button>
-            <button mat-menu-item *ngIf="funcionario.admin" (click)="revogarAdmin(funcionario)">
+            <button mat-menu-item *ngIf="funcionario.isAdmin" (click)="revogarAdmin(funcionario)">
               <mat-icon>admin_panel_settings</mat-icon>
               <span>Revogar Admin</span>
             </button>

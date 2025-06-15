@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.painelvpn.enums.Enum_StatusFuncionario;
 import com.painelvpn.validation.SenhaForte;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -107,6 +108,7 @@ public class Funcionario {
 		this.senha = senha;
 	}
 
+	@JsonProperty("isAdmin")
 	public boolean isAdmin() {
 		return isAdmin;
 	}

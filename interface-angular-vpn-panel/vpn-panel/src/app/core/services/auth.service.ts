@@ -29,7 +29,7 @@ export class AuthService {
       .pipe(
         tap(response => {
           this.cookieService.set('jwt_token', response.token, { secure: true, sameSite: 'Strict' });
-          this.currentUserSubject.next(response.funcionario);
+          this.checkAuthStatus();
         })
       );
   }
@@ -62,6 +62,7 @@ export class AuthService {
       this.http.get<Funcionario>(`${environment.apiUrl}/auth/me`)
         .subscribe({
           next: (user) => {
+            console.log('Usuário autenticado:', user);
             if (user && user.status === 'ATIVO') {
               this.currentUserSubject.next(user);
             } else {
