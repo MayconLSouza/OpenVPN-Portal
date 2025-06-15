@@ -109,7 +109,21 @@ export class FuncionariosListComponent implements OnInit {
           },
           error: (error) => {
             console.error('Erro ao promover administrador:', error);
-            this.snackBar.open(error.message || 'Erro ao promover administrador', 'OK', { duration: 3000 });
+            let mensagem = 'Erro ao promover administrador';
+            if (typeof error === 'string') {
+              mensagem = error;
+            } else if (error && error.message) {
+              mensagem = error.message;
+            } else if (error && error.error) {
+              if (typeof error.error === 'string') {
+                mensagem = error.error;
+              } else if (typeof error.error === 'object') {
+                mensagem = error.error.message || JSON.stringify(error.error, null, 2);
+              }
+            } else {
+              mensagem = JSON.stringify(error, null, 2);
+            }
+            this.snackBar.open(mensagem, 'OK', { duration: 6000 });
           }
         });
       }
