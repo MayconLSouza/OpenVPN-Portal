@@ -101,7 +101,7 @@ export class FuncionariosListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.funcionarioService.elegerAdministrador(funcionario.id).subscribe({
+        this.funcionarioService.elegerAdministrador(funcionario.idFuncionario).subscribe({
           next: () => {
             this.snackBar.open('Funcionário eleito como administrador com sucesso!', 'OK', { duration: 3000 });
             this.carregarFuncionarios();
@@ -125,7 +125,7 @@ export class FuncionariosListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.funcionarioService.revogarAdministrador(funcionario.id).subscribe({
+        this.funcionarioService.revogarAdministrador(funcionario.idFuncionario).subscribe({
           next: () => {
             this.snackBar.open('Permissão de administrador revogada com sucesso!', 'OK', { duration: 3000 });
             this.carregarFuncionarios();
@@ -140,6 +140,7 @@ export class FuncionariosListComponent implements OnInit {
   }
 
   gerenciarAcesso(funcionario: Funcionario, ativar: boolean) {
+    console.log('Funcionário:', funcionario);
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
         title: ativar ? 'Confirmar Reativação' : 'Confirmar Revogação',
@@ -151,9 +152,10 @@ export class FuncionariosListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
+        console.log('ID do funcionário:', funcionario.idFuncionario);
         const action = ativar 
-          ? this.funcionarioService.reativarAcesso(funcionario.id)
-          : this.funcionarioService.revogarAcesso(funcionario.id);
+          ? this.funcionarioService.reativarAcesso(funcionario.idFuncionario)
+          : this.funcionarioService.revogarAcesso(funcionario.idFuncionario);
 
         action.subscribe({
           next: () => {
@@ -191,7 +193,7 @@ export class FuncionariosListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.funcionarioService.removerFuncionario(funcionario.id).subscribe({
+        this.funcionarioService.removerFuncionario(funcionario.idFuncionario).subscribe({
           next: () => {
             this.snackBar.open('Funcionário removido com sucesso!', 'OK', { duration: 3000 });
             this.carregarFuncionarios();

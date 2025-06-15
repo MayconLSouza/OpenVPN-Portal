@@ -5,7 +5,7 @@ import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 export interface Funcionario {
-  id: string;
+  idFuncionario: string;
   nome: string;
   email: string;
   usuario: string;
@@ -47,10 +47,12 @@ export class FuncionarioService {
       } else if (error.status === 400) {
         errorMessage = error.error?.message || 'Dados inválidos';
       } else if (error.status === 500) {
-        errorMessage = 'Erro interno do servidor';
+        // Tenta obter a mensagem de erro do backend
+        errorMessage = error.error || 'Erro interno do servidor';
       }
     }
     
+    console.error('Erro detalhado:', error);
     return throwError(() => new Error(errorMessage));
   }
 
