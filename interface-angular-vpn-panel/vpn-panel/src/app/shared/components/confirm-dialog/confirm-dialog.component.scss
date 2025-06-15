@@ -1,1 +1,56 @@
 // No additional styles needed for this component 
+
+.confirm-dialog {
+  min-width: 300px;
+  max-width: 400px;
+
+  [mat-dialog-title] {
+    margin: 0;
+    padding: 16px 24px;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #e0e0e0;
+
+    h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.87);
+    }
+  }
+
+  [mat-dialog-content] {
+    padding: 20px 24px;
+    margin: 0;
+    min-height: 60px;
+
+    p {
+      margin: 0;
+      color: rgba(0, 0, 0, 0.87);
+      line-height: 1.5;
+    }
+  }
+
+  [mat-dialog-actions] {
+    margin: 0;
+    padding: 8px 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    border-top: 1px solid #e0e0e0;
+
+    button {
+      min-width: 80px;
+    }
+  }
+}
+
+// Material color classes
+.mat-primary {
+  background-color: #3f51b5;
+  color: white;
+}
+
+.mat-warn {
+  background-color: #f44336;
+  color: white;
+} 

@@ -7,21 +7,6 @@
     </button>
   </div>
 
-  <div class="filter-container">
-    <mat-form-field class="filter-field">
-      <mat-label>Filtrar</mat-label>
-      <input matInput [(ngModel)]="termoFiltro" placeholder="Digite para filtrar...">
-      <button *ngIf="termoFiltro" matSuffix mat-icon-button (click)="limparFiltro()">
-        <mat-icon>close</mat-icon>
-      </button>
-    </mat-form-field>
-
-    <button mat-raised-button color="primary" (click)="aplicarFiltro()" [disabled]="carregando">
-      <mat-icon>search</mat-icon>
-      Filtrar
-    </button>
-  </div>
-
   <div class="mat-elevation-z8">
     <div *ngIf="carregando" class="loading-container">
       <mat-spinner diameter="40"></mat-spinner>

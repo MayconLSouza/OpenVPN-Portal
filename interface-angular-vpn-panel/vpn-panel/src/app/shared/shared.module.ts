@@ -4,6 +4,7 @@ import { MaterialModule } from './material.module';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -13,12 +14,16 @@ import { MatButtonModule } from '@angular/material/button';
     CommonModule,
     MaterialModule,
     MatDialogModule,
-    MatButtonModule
+    MatButtonModule,
+    MatIconModule
   ],
   exports: [
-    ConfirmDialogComponent,
+    CommonModule,
     MaterialModule,
-    MatDialogModule
+    MatDialogModule,
+    MatButtonModule,
+    MatIconModule,
+    ConfirmDialogComponent
   ]
 })
 export class SharedModule { } 

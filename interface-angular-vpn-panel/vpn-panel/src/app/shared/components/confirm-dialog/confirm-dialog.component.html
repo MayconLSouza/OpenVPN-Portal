@@ -1,8 +1,18 @@
-<h2 mat-dialog-title>{{data.title}}</h2>
-<div mat-dialog-content>
-  <p>{{data.message}}</p>
-</div>
-<div mat-dialog-actions align="end">
-  <button mat-button (click)="onNoClick()">Cancelar</button>
-  <button mat-raised-button color="warn" (click)="onYesClick()">Confirmar</button>
+<div class="confirm-dialog">
+  <div mat-dialog-title>
+    <h2>{{ data.title }}</h2>
+  </div>
+
+  <div mat-dialog-content>
+    <p>{{ data.message }}</p>
+  </div>
+
+  <div mat-dialog-actions>
+    <button mat-button (click)="onCancel()">
+      Cancelar
+    </button>
+    <button mat-raised-button [class]="getActionColor()" (click)="onConfirm()">
+      {{ getConfirmText() }}
+    </button>
+  </div>
 </div> 

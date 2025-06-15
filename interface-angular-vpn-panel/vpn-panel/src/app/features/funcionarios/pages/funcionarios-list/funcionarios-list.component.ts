@@ -94,8 +94,9 @@ export class FuncionariosListComponent implements OnInit {
   elegerAdmin(funcionario: Funcionario) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
-        title: 'Confirmar Eleição',
-        message: `Deseja realmente eleger ${funcionario.nome} como administrador?`
+        title: 'Confirmar Promoção',
+        message: `Deseja promover ${funcionario.nome} para administrador?`,
+        actionType: 'promote'
       }
     });
 
@@ -103,12 +104,12 @@ export class FuncionariosListComponent implements OnInit {
       if (result) {
         this.funcionarioService.elegerAdministrador(funcionario.idFuncionario).subscribe({
           next: () => {
-            this.snackBar.open('Funcionário eleito como administrador com sucesso!', 'OK', { duration: 3000 });
+            this.snackBar.open('Funcionário promovido a administrador com sucesso!', 'OK', { duration: 3000 });
             this.carregarFuncionarios();
           },
           error: (error) => {
-            console.error('Erro ao eleger administrador:', error);
-            this.snackBar.open(error.message || 'Erro ao eleger administrador', 'OK', { duration: 3000 });
+            console.error('Erro ao promover administrador:', error);
+            this.snackBar.open(error.message || 'Erro ao promover administrador', 'OK', { duration: 3000 });
           }
         });
       }
@@ -118,8 +119,9 @@ export class FuncionariosListComponent implements OnInit {
   revogarAdmin(funcionario: Funcionario) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
-        title: 'Confirmar Revogação',
-        message: `Deseja realmente revogar a permissão de administrador de ${funcionario.nome}?`
+        title: 'Confirmar Rebaixamento',
+        message: `Deseja remover os privilégios de administrador de ${funcionario.nome}?`,
+        actionType: 'demote'
       }
     });
 
@@ -127,12 +129,12 @@ export class FuncionariosListComponent implements OnInit {
       if (result) {
         this.funcionarioService.revogarAdministrador(funcionario.idFuncionario).subscribe({
           next: () => {
-            this.snackBar.open('Permissão de administrador revogada com sucesso!', 'OK', { duration: 3000 });
+            this.snackBar.open('Privilégios de administrador removidos com sucesso!', 'OK', { duration: 3000 });
             this.carregarFuncionarios();
           },
           error: (error) => {
-            console.error('Erro ao revogar administrador:', error);
-            this.snackBar.open(error.message || 'Erro ao revogar permissão de administrador', 'OK', { duration: 3000 });
+            console.error('Erro ao remover privilégios de administrador:', error);
+            this.snackBar.open(error.message || 'Erro ao remover privilégios de administrador', 'OK', { duration: 3000 });
           }
         });
       }
@@ -144,8 +146,9 @@ export class FuncionariosListComponent implements OnInit {
       data: {
         title: ativar ? 'Confirmar Reativação' : 'Confirmar Revogação',
         message: ativar 
-          ? `Deseja realmente reativar o acesso de ${funcionario.nome}?`
-          : `Deseja realmente revogar o acesso de ${funcionario.nome}?`
+          ? `Deseja reativar o acesso de ${funcionario.nome}?`
+          : `Deseja revogar o acesso de ${funcionario.nome}?`,
+        actionType: ativar ? 'save' : 'revoke'
       }
     });
 
@@ -159,8 +162,8 @@ export class FuncionariosListComponent implements OnInit {
           next: () => {
             this.snackBar.open(
               ativar 
-                ? 'Acesso do funcionário reativado com sucesso!'
-                : 'Acesso do funcionário revogado com sucesso!',
+                ? 'Acesso reativado com sucesso!'
+                : 'Acesso revogado com sucesso!',
               'OK',
               { duration: 3000 }
             );
@@ -170,8 +173,8 @@ export class FuncionariosListComponent implements OnInit {
             console.error('Erro ao gerenciar acesso:', error);
             this.snackBar.open(
               error.message || (ativar
-                ? 'Erro ao reativar acesso do funcionário'
-                : 'Erro ao revogar acesso do funcionário'),
+                ? 'Erro ao reativar acesso'
+                : 'Erro ao revogar acesso'),
               'OK',
               { duration: 3000 }
             );
@@ -185,7 +188,8 @@ export class FuncionariosListComponent implements OnInit {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
         title: 'Confirmar Remoção',
-        message: `Deseja realmente remover o funcionário ${funcionario.nome}?`
+        message: `Deseja remover o funcionário ${funcionario.nome}? Esta ação não pode ser desfeita.`,
+        actionType: 'delete'
       }
     });
 
