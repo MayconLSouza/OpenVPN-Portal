@@ -44,14 +44,6 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Cargo</mat-label>
-          <input matInput formControlName="cargo" required>
-          <mat-error *ngIf="form.get('cargo')?.hasError('required')">
-            Cargo é obrigatório
-          </mat-error>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full-width">
           <mat-label>Senha</mat-label>
           <input matInput [type]="hideSenha ? 'password' : 'text'" formControlName="senha" required>
           <button mat-icon-button matSuffix (click)="hideSenha = !hideSenha" type="button">
