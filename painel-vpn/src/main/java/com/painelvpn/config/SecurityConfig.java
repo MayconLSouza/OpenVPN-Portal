@@ -39,7 +39,7 @@ public class SecurityConfig implements WebMvcConfigurer {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/api/senha/**", "/error").permitAll()
+                .requestMatchers("/api/auth/**", "/api/senha/**", "/api/solicitar-redefinicao", "/error").permitAll()
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider)

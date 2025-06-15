@@ -12,7 +12,7 @@ export class PasswordResetService {
   constructor(private http: HttpClient) { }
 
   requestPasswordReset(username: string): Observable<string> {
-    return this.http.post<string>(`${this.apiUrl}/solicitar-redefinicao`, { usuario: username });
+    return this.http.post<string>(`${this.apiUrl}/senha/solicitar-redefinicao`, { usuario: username });
   }
 
   resetPassword(token: string, newPassword: string, confirmPassword: string): Observable<string> {
