@@ -1,0 +1,49 @@
+<div class="certificados-container">
+  <div class="header-actions">
+    <input type="text" placeholder="Buscar por identificador" [(ngModel)]="busca" (input)="onBuscaChange()" />
+    <input type="date" [(ngModel)]="filtroData" (change)="onDataChange()" />
+    <button mat-raised-button color="primary" (click)="criarCertificado()" [disabled]="criando">
+      Novo
+    </button>
+    <button mat-raised-button color="warn" (click)="removerSelecionados()" [disabled]="selecionados.size === 0">
+      Remover
+    </button>
+  </div>
+
+  <div *ngIf="criando" class="progress-bar-container">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <span>Criando certificado...</span>
+  </div>
+
+  <div *ngIf="carregando" class="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <table *ngIf="!carregando" class="certificados-table">
+    <thead>
+      <tr>
+        <th><input type="checkbox" [checked]="todosSelecionados()" (change)="selecionarTodos()" /></th>
+        <th>Download</th>
+        <th>Identificador</th>
+        <th>Data</th>
+        <th>Validade</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let cert of certificadosFiltrados">
+        <td><input type="checkbox" [checked]="selecionados.has(cert.id)" (change)="toggleSelecionado(cert.id)" /></td>
+        <td>
+          <button mat-icon-button (click)="baixarCertificado(cert.id)" title="Download">
+            <mat-icon>download</mat-icon>
+          </button>
+        </td>
+        <td>{{ cert.id }}</td>
+        <td>{{ cert.dataCriacao | date: 'dd/MM/yyyy' }}</td>
+        <td>{{ cert.dataValidade | date: 'dd/MM/yyyy' }}</td>
+      </tr>
+      <tr *ngIf="certificadosFiltrados.length === 0">
+        <td colspan="5" class="empty">Nenhum certificado encontrado.</td>
+      </tr>
+    </tbody>
+  </table>
+</div> 

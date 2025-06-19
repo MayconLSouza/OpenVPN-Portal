@@ -47,7 +47,7 @@ public class FuncionarioService {
     }
 
     @Transactional
-    public void remover(String id) {
+    public void removerFuncionario(String id) {
         Funcionario funcionario = buscarPorId(id);
         if (funcionario.getCertificados() != null && !funcionario.getCertificados().isEmpty()) {
             throw new RuntimeException("Não é possível remover o funcionário pois ele possui certificados associados");
@@ -100,6 +100,22 @@ public class FuncionarioService {
         auditoriaService.registrarAcaoAdmin(
             "REVOGACAO_ACESSO",
             "Revogação de acesso do funcionário: " + funcionario.getNome()
+        );
+        return funcionarioAtualizado;
+    }
+
+    @Transactional
+    public Funcionario reativarAcessoFuncionario(String id) {
+        Funcionario funcionario = buscarPorId(id);
+        if (funcionario.getStatus() == Enum_StatusFuncionario.ATIVO) {
+            throw new RuntimeException("O acesso do funcionário já está ativo");
+        }
+        funcionario.setStatus(Enum_StatusFuncionario.ATIVO);
+        funcionario.resetarTentativasLogin(); // Reseta as tentativas de login ao reativar
+        Funcionario funcionarioAtualizado = funcionarioRepository.save(funcionario);
+        auditoriaService.registrarAcaoAdmin(
+            "REATIVACAO_ACESSO",
+            "Reativação de acesso do funcionário: " + funcionario.getNome()
         );
         return funcionarioAtualizado;
     }

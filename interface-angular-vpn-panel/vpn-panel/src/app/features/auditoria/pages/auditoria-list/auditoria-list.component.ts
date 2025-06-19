@@ -2,17 +2,8 @@ import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-auditoria-list',
-  template: `
-    <div class="container">
-      <h1>Log de Auditoria</h1>
-      <p>Lista de logs será implementada aqui.</p>
-    </div>
-  `,
-  styles: [`
-    .container {
-      padding: 20px;
-    }
-  `]
+  templateUrl: './auditoria-list.component.html',
+  styleUrls: ['./auditoria-list.component.scss']
 })
 export class AuditoriaListComponent implements OnInit {
   constructor() {}

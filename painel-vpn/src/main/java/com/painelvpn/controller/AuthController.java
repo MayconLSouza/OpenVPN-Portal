@@ -3,6 +3,7 @@ package com.painelvpn.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -12,15 +13,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping;
 
-import com.painelvpn.model.Funcionario;
+import com.painelvpn.dto.LoginRequest;
 import com.painelvpn.service.AuthService;
 import com.painelvpn.service.JwtService;
+import com.painelvpn.model.Funcionario;
+import com.painelvpn.repository.IFuncionarioRepository;
 
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -31,16 +36,19 @@ public class AuthController {
     private final AuthService authService;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+    private final IFuncionarioRepository funcionarioRepository;
 
     public AuthController(
             AuthenticationManager authenticationManager,
             AuthService authService,
             JwtService jwtService,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder,
+            IFuncionarioRepository funcionarioRepository) {
         this.authenticationManager = authenticationManager;
         this.authService = authService;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
+        this.funcionarioRepository = funcionarioRepository;
     }
 
     @PostMapping("/login")
@@ -54,23 +62,38 @@ public class AuthController {
                     request.getSenha()
                 )
             );
-            
+
+            // Se chegou aqui, a autenticação foi bem-sucedida
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            String token = jwtService.generateToken(userDetails);
             
-            logger.info("Login bem-sucedido para usuário: {}", request.getUsuario());
+            // Busca o ID do funcionário
+            Funcionario funcionario = funcionarioRepository.findByUsuario(request.getUsuario())
+                .orElseThrow(() -> new RuntimeException("Funcionário não encontrado"));
+            
+            // Gera o token incluindo o ID do funcionário
+            String token = jwtService.generateToken(userDetails, funcionario.getIdFuncionario());
+            
+            // Registra o login bem-sucedido
+            authService.handleSuccessfulLogin(request.getUsuario());
+
             return ResponseEntity.ok(new LoginResponse(token));
-            
+
         } catch (BadCredentialsException e) {
-            logger.error("Falha no login para usuário: {}. Erro: {}", request.getUsuario(), e.getMessage());
+            // Registra a tentativa falha de login
+            authService.handleFailedLogin(request.getUsuario());
             return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body(new ErrorResponse("Credenciais inválidas. Verifique seu usuário e senha."));
-        } catch (Exception e) {
-            logger.error("Erro inesperado no login para usuário: {}. Erro: {}", request.getUsuario(), e.getMessage());
+                .body(new ErrorResponse("Usuário ou senha estão incorretos"));
+        } catch (DisabledException e) {
+            // Usuário bloqueado ou revogado
             return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse("Erro interno do servidor ao processar o login."));
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(new ErrorResponse(e.getMessage()));
+        } catch (AuthenticationException e) {
+            // Captura outras exceções de autenticação
+            return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(new ErrorResponse(e.getMessage()));
         }
     }
 
@@ -81,34 +104,21 @@ public class AuthController {
         logger.info("Senha criptografada gerada");
         return ResponseEntity.ok(encoded);
     }
-}
 
-class LoginRequest {
-    private String usuario;
-    private String senha;
-
-    public LoginRequest() {
-    }
-
-    public LoginRequest(String usuario, String senha) {
-        this.usuario = usuario;
-        this.senha = senha;
-    }
-
-    public String getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
-    }
-
-    public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser(Authentication authentication) {
+        if (authentication == null || !(authentication.getPrincipal() instanceof String)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token inválido");
+        }
+        String funcionarioId = (String) authentication.getPrincipal();
+        Funcionario funcionario = funcionarioRepository.findById(funcionarioId)
+            .orElse(null);
+        if (funcionario == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário não encontrado");
+        }
+        // Por segurança, não envie a senha no JSON
+        funcionario.setSenha("");
+        return ResponseEntity.ok(funcionario);
     }
 }
 
@@ -136,7 +146,7 @@ class ErrorResponse {
     }
 
     public String getMessage() {
-        return message;
+        return this.message;
     }
 
     public void setMessage(String message) {

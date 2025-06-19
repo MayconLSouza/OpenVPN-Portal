@@ -121,6 +121,25 @@
                     }
                 },
                 {
+                    "name": "Reativar Acesso",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "http://localhost:8080/api/funcionarios/{{id}}/reativar-acesso",
+                            "protocol": "http",
+                            "host": ["localhost"],
+                            "port": "8080",
+                            "path": ["api", "funcionarios", "{{id}}", "reativar-acesso"]
+                        }
+                    }
+                },
+                {
                     "name": "Remover Funcionário",
                     "request": {
                         "method": "DELETE",

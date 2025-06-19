@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 @Injectable({
@@ -7,24 +7,22 @@ import { AuthService } from '../services/auth.service';
 })
 export class AuthGuard implements CanActivate {
   constructor(
-    private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): boolean {
-    if (this.authService.isAuthenticated()) {
-      // Verifica se a rota requer admin
-      if (route.data['requiresAdmin'] && !this.authService.isAdmin()) {
-        this.router.navigate(['/unauthorized']);
-        return false;
-      }
-      return true;
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+    if (!this.authService.isAuthenticated()) {
+      this.router.navigate(['/login'], { queryParams: { returnUrl: state.url }});
+      return false;
     }
 
-    this.router.navigate(['/login'], { queryParams: { returnUrl: state.url }});
-    return false;
+    // Verifica se a rota requer privilégios de admin
+    if (route.data['requiresAdmin'] && !this.authService.isAdmin()) {
+      this.router.navigate(['/dashboard']);
+      return false;
+    }
+
+    return true;
   }
 } 

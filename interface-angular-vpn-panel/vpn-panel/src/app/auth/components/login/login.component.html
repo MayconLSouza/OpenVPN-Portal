@@ -1,0 +1,45 @@
+<div class="login-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>VPN Panel</mat-card-title>
+      <mat-card-subtitle>Faça login para continuar</mat-card-subtitle>
+    </mat-card-header>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <mat-card-content>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Usuário</mat-label>
+          <input matInput formControlName="usuario" required>
+          <mat-error *ngIf="loginForm.get('usuario')?.hasError('required')">
+            Usuário é obrigatório
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Senha</mat-label>
+          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="senha" required>
+          <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
+            <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+          <mat-error *ngIf="loginForm.get('senha')?.hasError('required')">
+            Senha é obrigatória
+          </mat-error>
+        </mat-form-field>
+
+        <div class="forgot-password">
+          <a mat-button color="primary" (click)="onForgotPassword()">
+            Esqueceu senha?
+          </a>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid || loading" (click)="onSubmit()">
+          <mat-icon *ngIf="!loading">login</mat-icon>
+          <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
+          Login
+        </button>
+      </mat-card-actions>
+    </form>
+  </mat-card>
+</div> 

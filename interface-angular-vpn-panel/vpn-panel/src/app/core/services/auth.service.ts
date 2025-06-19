@@ -29,7 +29,7 @@ export class AuthService {
       .pipe(
         tap(response => {
           this.cookieService.set('jwt_token', response.token, { secure: true, sameSite: 'Strict' });
-          this.currentUserSubject.next(response.funcionario);
+          this.checkAuthStatus();
         })
       );
   }
@@ -49,16 +49,26 @@ export class AuthService {
 
   isAdmin(): boolean {
     const currentUser = this.currentUserSubject.value;
-    return currentUser ? currentUser.isAdmin : false;
+    return currentUser?.isAdmin || false;
+  }
+
+  getCurrentUser(): Funcionario | null {
+    return this.currentUserSubject.value;
   }
 
   private checkAuthStatus(): void {
     const token = this.getToken();
     if (token) {
-      // Implementar verificação do token e carregamento do usuário
       this.http.get<Funcionario>(`${environment.apiUrl}/auth/me`)
         .subscribe({
-          next: (user) => this.currentUserSubject.next(user),
+          next: (user) => {
+            console.log('Usuário autenticado:', user);
+            if (user && user.status === 'ATIVO') {
+              this.currentUserSubject.next(user);
+            } else {
+              this.logout();
+            }
+          },
           error: () => this.logout()
         });
     }

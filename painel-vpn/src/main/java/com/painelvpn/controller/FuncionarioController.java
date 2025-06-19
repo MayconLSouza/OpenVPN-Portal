@@ -9,6 +9,8 @@ import com.painelvpn.service.FuncionarioService;
 
 import jakarta.validation.Valid;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/funcionarios")
 public class FuncionarioController {
@@ -17,6 +19,12 @@ public class FuncionarioController {
 
     public FuncionarioController(FuncionarioService funcionarioService) {
         this.funcionarioService = funcionarioService;
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Funcionario>> listarFuncionarios() {
+        return ResponseEntity.ok(funcionarioService.listarTodos());
     }
 
     @PostMapping
@@ -46,7 +54,13 @@ public class FuncionarioController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> removerFuncionario(@PathVariable String id) {
-        funcionarioService.remover(id);
+        funcionarioService.removerFuncionario(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/reativar-acesso")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Funcionario> reativarAcessoFuncionario(@PathVariable String id) {
+        return ResponseEntity.ok(funcionarioService.reativarAcessoFuncionario(id));
     }
 } 

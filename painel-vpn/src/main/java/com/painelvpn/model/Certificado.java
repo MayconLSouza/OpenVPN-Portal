@@ -3,6 +3,8 @@ package com.painelvpn.model;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -36,6 +38,7 @@ public class Certificado {
     private String caminhoLinux;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "id_funcionario", nullable = false)
     private Funcionario funcionario;
 

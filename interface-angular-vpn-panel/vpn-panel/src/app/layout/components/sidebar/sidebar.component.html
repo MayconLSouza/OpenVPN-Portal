@@ -1,0 +1,16 @@
+<mat-nav-list>
+  <a mat-list-item routerLink="/dashboard" routerLinkActive="active">
+    <mat-icon matListItemIcon>dashboard</mat-icon>
+    <span matListItemTitle>Dashboard</span>
+  </a>
+
+  <a mat-list-item routerLink="/certificados" routerLinkActive="active">
+    <mat-icon matListItemIcon>vpn_key</mat-icon>
+    <span matListItemTitle>Certificados</span>
+  </a>
+
+  <a mat-list-item routerLink="/funcionarios" routerLinkActive="active" *ngIf="isAdmin$ | async">
+    <mat-icon matListItemIcon>people</mat-icon>
+    <span matListItemTitle>Funcionários</span>
+  </a>
+</mat-nav-list> 

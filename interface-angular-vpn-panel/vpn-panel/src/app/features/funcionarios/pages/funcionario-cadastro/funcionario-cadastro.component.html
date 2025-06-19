@@ -1,0 +1,88 @@
+<div class="container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Cadastro de Funcionário</mat-card-title>
+      <mat-card-subtitle>Preencha os dados do novo funcionário</mat-card-subtitle>
+    </mat-card-header>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <mat-card-content>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nome</mat-label>
+          <input matInput formControlName="nome" required>
+          <mat-error *ngIf="form.get('nome')?.hasError('required')">
+            Nome é obrigatório
+          </mat-error>
+          <mat-error *ngIf="form.get('nome')?.hasError('minlength')">
+            Nome deve ter no mínimo 3 caracteres
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" required type="email">
+          <mat-error *ngIf="form.get('email')?.hasError('required')">
+            Email é obrigatório
+          </mat-error>
+          <mat-error *ngIf="form.get('email')?.hasError('email')">
+            Email inválido
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Usuário</mat-label>
+          <input matInput formControlName="usuario" required>
+          <mat-error *ngIf="form.get('usuario')?.hasError('required')">
+            Usuário é obrigatório
+          </mat-error>
+          <mat-error *ngIf="form.get('usuario')?.hasError('minlength')">
+            Usuário deve ter no mínimo 3 caracteres
+          </mat-error>
+          <mat-error *ngIf="form.get('usuario')?.hasError('maxlength')">
+            Usuário deve ter no máximo 30 caracteres
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Senha</mat-label>
+          <input matInput [type]="hideSenha ? 'password' : 'text'" formControlName="senha" required>
+          <button mat-icon-button matSuffix (click)="hideSenha = !hideSenha" type="button">
+            <mat-icon>{{hideSenha ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+          <mat-error *ngIf="form.get('senha')?.hasError('required')">
+            Senha é obrigatória
+          </mat-error>
+          <mat-error *ngIf="form.get('senha')?.hasError('pattern')">
+            A senha deve conter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Confirmar Senha</mat-label>
+          <input matInput [type]="hideConfirmSenha ? 'password' : 'text'" formControlName="confirmarSenha" required>
+          <button mat-icon-button matSuffix (click)="hideConfirmSenha = !hideConfirmSenha" type="button">
+            <mat-icon>{{hideConfirmSenha ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+          <mat-error *ngIf="form.get('confirmarSenha')?.hasError('required')">
+            Confirmação de senha é obrigatória
+          </mat-error>
+          <mat-error *ngIf="form.hasError('senhasDiferentes')">
+            As senhas não coincidem
+          </mat-error>
+        </mat-form-field>
+
+        <mat-checkbox formControlName="admin" class="admin-checkbox">
+          Usuário Administrador
+        </mat-checkbox>
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <button mat-button type="button" (click)="voltar()">Cancelar</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+          <mat-icon>save</mat-icon>
+          Salvar
+        </button>
+      </mat-card-actions>
+    </form>
+  </mat-card>
+</div> 
