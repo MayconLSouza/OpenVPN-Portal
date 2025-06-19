@@ -1,6 +1,7 @@
 # VPN Panel
+_Projeto Desenvolvido para a Matéria Laboratório de Redes de Computadores Ministrada por **Wellington Ferreira**_
 
-Um painel de gerenciamento de certificados VPN para organizações. Os funcionários podem gerar ou revogar seus próprios certificados OpenVPN, eliminando o risco de credenciais compartilhadas. Os administradores supervisionam o acesso dos usuários enquanto delegam o gerenciamento de certificados, agilizando a segurança para o trabalho remoto.
+Este é um painel de gerenciamento de certificados VPN para organizações. Os funcionários podem gerar ou revogar seus próprios certificados OpenVPN, eliminando o risco de credenciais compartilhadas. Os administradores supervisionam o acesso dos usuários enquanto delegam o gerenciamento de certificados, agilizando a segurança para o trabalho remoto.
 Este sistema é composto por um back-end em Spring Boot e um front-end em Angular.
 ---
 
