@@ -35,27 +35,46 @@ public class FuncionarioController {
 
     @PutMapping("/{id}/eleger-admin")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Funcionario> elegerAdministrador(@PathVariable String id) {
-        return ResponseEntity.ok(funcionarioService.elegerAdministrador(id));
+    public ResponseEntity<?> elegerAdministrador(@PathVariable("id") String idFuncionario) {
+        try {
+            Funcionario funcionario = funcionarioService.elegerAdministrador(idFuncionario);
+            return ResponseEntity.ok(funcionario);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
     }
 
     @PutMapping("/{id}/revogar-admin")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Funcionario> revogarAdministrador(@PathVariable String id) {
-        return ResponseEntity.ok(funcionarioService.revogarAdministrador(id));
+    public ResponseEntity<?> revogarAdministrador(@PathVariable("id") String idFuncionario) {
+        try {
+            Funcionario funcionario = funcionarioService.revogarAdministrador(idFuncionario);
+            return ResponseEntity.ok(funcionario);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
     }
 
     @PutMapping("/{id}/revogar-acesso")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Funcionario> revogarAcessoFuncionario(@PathVariable String id) {
-        return ResponseEntity.ok(funcionarioService.revogarAcessoFuncionario(id));
+    public ResponseEntity<?> revogarAcessoFuncionario(@PathVariable("id") String idFuncionario) {
+        try {
+            Funcionario funcionario = funcionarioService.revogarAcessoFuncionario(idFuncionario);
+            return ResponseEntity.ok(funcionario);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> removerFuncionario(@PathVariable String id) {
-        funcionarioService.removerFuncionario(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> removerFuncionario(@PathVariable("id") String idFuncionario) {
+        try {
+            funcionarioService.removerFuncionario(idFuncionario);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
     }
 
     @PutMapping("/{id}/reativar-acesso")

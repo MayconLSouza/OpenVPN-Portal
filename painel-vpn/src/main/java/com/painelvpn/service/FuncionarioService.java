@@ -48,60 +48,84 @@ public class FuncionarioService {
 
     @Transactional
     public void removerFuncionario(String id) {
-        Funcionario funcionario = buscarPorId(id);
-        if (funcionario.getCertificados() != null && !funcionario.getCertificados().isEmpty()) {
-            throw new RuntimeException("Não é possível remover o funcionário pois ele possui certificados associados");
+        try {
+            Funcionario funcionario = buscarPorId(id);
+            if (funcionario.getCertificados() != null && !funcionario.getCertificados().isEmpty()) {
+                throw new RuntimeException("Não é possível remover o funcionário pois ele possui certificados associados");
+            }
+            funcionarioRepository.deleteById(id);
+            auditoriaService.registrarAcaoAdmin(
+                "REMOCAO_FUNCIONARIO",
+                "Remoção do funcionário: " + funcionario.getNome()
+            );
+        } catch (Exception e) {
+            System.err.println("Erro ao remover funcionário: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao remover funcionário: " + e.getMessage());
         }
-        funcionarioRepository.deleteById(id);
-        auditoriaService.registrarAcaoAdmin(
-            "REMOCAO_FUNCIONARIO",
-            "Remoção do funcionário: " + funcionario.getNome()
-        );
     }
 
     @Transactional
     public Funcionario elegerAdministrador(String id) {
-        Funcionario funcionario = buscarPorId(id);
-        if (funcionario.getStatus() != Enum_StatusFuncionario.ATIVO) {
-            throw new RuntimeException("Apenas funcionários ativos podem se tornar administradores");
+        try {
+            Funcionario funcionario = buscarPorId(id);
+            if (funcionario.getStatus() != Enum_StatusFuncionario.ATIVO) {
+                throw new RuntimeException("Apenas funcionários ativos podem se tornar administradores");
+            }
+            funcionario.setAdmin(true);
+            Funcionario funcionarioAtualizado = funcionarioRepository.save(funcionario);
+            auditoriaService.registrarAcaoAdmin(
+                "ELEICAO_ADMIN",
+                "Promoção do funcionário " + funcionario.getNome() + " a administrador"
+            );
+            return funcionarioAtualizado;
+        } catch (Exception e) {
+            System.err.println("Erro ao eleger administrador: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao eleger administrador: " + e.getMessage());
         }
-        funcionario.setAdmin(true);
-        Funcionario funcionarioAtualizado = funcionarioRepository.save(funcionario);
-        auditoriaService.registrarAcaoAdmin(
-            "ELEICAO_ADMIN",
-            "Promoção do funcionário " + funcionario.getNome() + " a administrador"
-        );
-        return funcionarioAtualizado;
     }
 
     @Transactional
     public Funcionario revogarAdministrador(String id) {
-        Funcionario funcionario = buscarPorId(id);
-        if (!funcionario.isAdmin()) {
-            throw new RuntimeException("O funcionário não é um administrador");
+        try {
+            Funcionario funcionario = buscarPorId(id);
+            if (!funcionario.isAdmin()) {
+                throw new RuntimeException("O funcionário não é um administrador");
+            }
+            funcionario.setAdmin(false);
+            Funcionario funcionarioAtualizado = funcionarioRepository.save(funcionario);
+            auditoriaService.registrarAcaoAdmin(
+                "REVOGACAO_ADMIN",
+                "Revogação de privilégios de administrador do funcionário: " + funcionario.getNome()
+            );
+            return funcionarioAtualizado;
+        } catch (Exception e) {
+            System.err.println("Erro ao revogar administrador: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao revogar administrador: " + e.getMessage());
         }
-        funcionario.setAdmin(false);
-        Funcionario funcionarioAtualizado = funcionarioRepository.save(funcionario);
-        auditoriaService.registrarAcaoAdmin(
-            "REVOGACAO_ADMIN",
-            "Revogação de privilégios de administrador do funcionário: " + funcionario.getNome()
-        );
-        return funcionarioAtualizado;
     }
 
     @Transactional
     public Funcionario revogarAcessoFuncionario(String id) {
-        Funcionario funcionario = buscarPorId(id);
-        if (funcionario.getStatus() == Enum_StatusFuncionario.REVOGADO) {
-            throw new RuntimeException("O acesso do funcionário já está revogado");
+        try {
+            Funcionario funcionario = buscarPorId(id);
+            if (funcionario.getStatus() == Enum_StatusFuncionario.REVOGADO) {
+                throw new RuntimeException("O acesso do funcionário já está revogado");
+            }
+            funcionario.setStatus(Enum_StatusFuncionario.REVOGADO);
+            Funcionario funcionarioAtualizado = funcionarioRepository.save(funcionario);
+            auditoriaService.registrarAcaoAdmin(
+                "REVOGACAO_ACESSO",
+                "Revogação de acesso do funcionário: " + funcionario.getNome()
+            );
+            return funcionarioAtualizado;
+        } catch (Exception e) {
+            System.err.println("Erro ao revogar acesso do funcionário: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao revogar acesso do funcionário: " + e.getMessage());
         }
-        funcionario.setStatus(Enum_StatusFuncionario.REVOGADO);
-        Funcionario funcionarioAtualizado = funcionarioRepository.save(funcionario);
-        auditoriaService.registrarAcaoAdmin(
-            "REVOGACAO_ACESSO",
-            "Revogação de acesso do funcionário: " + funcionario.getNome()
-        );
-        return funcionarioAtualizado;
     }
 
     @Transactional
